@@ -21,6 +21,7 @@
     z-index: -1;
     position: absolute;
 }
+
 .form-control {
     background: transparent;
     border: none;
@@ -37,6 +38,7 @@
     text-decoration: none;
     border-color:transparent;
 }
+
 .form-control::-webkit-input-placeholder { 
     color: rgba(255, 255, 255, 0.8) !important;
 }
@@ -53,6 +55,7 @@
     color: rgb(10, 2, 40);
     text-decoration: none;
 }
+
 .table-image{
     width: 2rem;
 }
@@ -130,5 +133,89 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
+
+#formigidk {
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+.form-control4 {
+    background: transparent;
+    border: none;
+    width: 235px;
+    height: 45px;
+    color: rgb(36, 58, 138) !important;
+    border: 1px solid transparent;
+    border-radius: 0px;
+    padding-left: 0px;
+    padding-right: 15px;
+    transition: 0.3s; 
+    margin-bottom: 20px;
+    text-decoration: none;
+    border-color:transparent;
+}
+
+.form-control4::placeholder {
+    color: rgb(36, 58, 138) !important; /* Change this color to the desired color */
+}
+.form-control4:hover,
+.form-control4:focus {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    color: rgb(10, 2, 40);
+    text-decoration: none;
+}
+
+.form-control5 {
+    background: transparent;
+    border: none;
+    width: 0px;
+    height: 45px;
+    color: rgb(36, 58, 138) !important;
+    border-radius: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    transition: 0.3s; 
+    text-decoration: none;
+    border-color:transparent;
+    position: relative;
+}
+
+.form-control5:hover,
+.form-control5:focus {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    color: rgb(10, 2, 40);
+    text-decoration: none;
+}
+
+
+.input-group {
+    position: relative;
+  }
+  
+  .input-group-append {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0;
+    border: none;
+  }
+  
+  .input-group-append .btn {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    width: 30px;
+    height: 50px;
+    color: rgb(36, 58, 138) !important;
+    margin-bottom: 20px;
+    padding-right: 10px;
+    text-decoration: none;
+    border-color: transparent;
+    position: relative;
+  }

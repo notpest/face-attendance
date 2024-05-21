@@ -28,12 +28,17 @@
 
                 <div class="col-md-6 text-end">
                     <button id="attendanceBtn" onclick="location.href='{{ url_for('classm') }}'" class="btn btn-info"><i class="bi bi-person-check"> Class Management</i> </button> 
-                    <button id="addRowBtn" class="btn btn-success"><i class="bi bi-person-plus"> Add</i> </button>
+                    <!-- <button id="addRowBtn" class="btn btn-success"><i class="bi bi-person-plus"> Add</i> </button> -->
                     <button id="logoutBtn" class="form-control2"><i class="bi bi-box-arrow-right"> Logout</i> </button>
                 </div>
                 <div class="col-md-6 text-end">
                     <div class="input-group mb-3">
                         <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                        <button class="form-control dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Classrooms</button>
+                            <div class="dropdown-menu" id="classDropdown">
+                                <!-- Dropdown items will be dynamically added here -->
+                            </div>
+                        <button id="addRowBtn" class="form-control"><i class="bi bi-plus"> Add Student</i></button>
                     </div>
                 </div>
             </div>
@@ -70,7 +75,7 @@
                             {% endfor %}
                         </tbody>
                       </table>
-                </div>s
+                </div>
             </div>
         </div>
     </section>
