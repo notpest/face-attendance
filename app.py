@@ -231,8 +231,8 @@ def add_user():
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO public.user (register_no, name, class_name, created_by, updated_by) VALUES (%s, %s, %s, %s, %s) RETURNING id",
-            (register_no, name, class_name, admin_id, admin_id)
+            "INSERT INTO public.user (register_no, name, created_by, updated_by) VALUES (%s, %s, %s, %s) RETURNING id",
+            (register_no, name, admin_id, admin_id)
         )
         user_id = cursor.fetchone()[0]
         cursor.execute(
@@ -332,7 +332,7 @@ def get_user_data_by_register_no(register_no):
 
         # Fetch user data by register number
         cursor.execute(
-            "SELECT u.id, u.register_no, u.name, u.class_name, r.content " +
+            "SELECT u.id, u.register_no, u.name, r.content " +
             "FROM public.user u " +
             "JOIN resources r ON u.id = r.user_id " +
             "WHERE u.register_no = %s",
