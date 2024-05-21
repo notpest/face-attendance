@@ -91,23 +91,19 @@
     transform: translate(-50%, -50%);
 }
 
-.days li:hover::before{
-    background: #f2f2f2;
-}
-
 .days li.active::before{
     background: rgb(3, 7, 96);
 }
 
-/* Add some styles for the calendar */
+
 .calendar .days li {
     display: inline-block;
-    width: 30px; /* Adjust the width and height to change the size of the circles */
+    width: 30px;
     height: 30px;
     line-height: 30px;
     text-align: center;
-    border-radius: 50%; /* Make the element round */
-    margin: 5px; /* Adjust the margin to control spacing between circles */
+    border-radius: 50%; 
+    margin: 5px; 
 }
 
 .calendar .days li.present {
