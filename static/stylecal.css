@@ -1,0 +1,116 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+.wrapper{
+    width: 450px;
+    background: white;
+    border-radius: 10px;
+}
+
+.wrapper header{
+    display: flex;
+    align-items: center;
+    padding: 25px 30px 10px;
+    justify-content: space-between;
+}
+
+.wrapper header .current-date{
+    font-size: 1.45rem;
+    font-weight: 500;
+    color: black;
+}
+
+.wrapper header .icons span{
+    height: 50px;
+    width: 50px;
+    font-size: 1.9rem ;
+    margin: 0 5px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 38px;
+    border-radius: 20%;
+    background: white;
+    color: rgb(63, 64, 66);
+}
+
+.wrapper header .icons span:hover{
+    background: lavender;
+    color: rgb(0,0,0);
+
+}
+
+.wrapper header .icons span :last-child{
+    margin-right: -10px;
+}
+
+.calendar{
+    padding: 20px;
+}
+
+.calendar ul{
+    display: flex;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+.calendar.days{
+    margin-bottom: 20px;
+}
+
+.calendar .weeks li{
+    font-weight: 500;
+}
+
+.calendar ul li{
+    position: relative;
+    width: calc(100% / 7)
+}
+
+.calendar .days li{
+    z-index: 1;
+    cursor: pointer;
+    margin-top: 30px;
+}
+
+.days li.inactive{
+    color: #aaa;
+}
+
+.days li.active{
+    color: #fff;
+}
+
+.calendar .days li::before{
+    position: absolute;
+    content: "";
+    height: 40px;
+    width: 40px;
+    top: 50%;
+    left: 15%;
+    z-index: -1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.days li:hover::before{
+    background: #f2f2f2;
+}
+
+.days li.active::before{
+    background: rgb(3, 7, 96);
+}
+
+/* Add some styles for the calendar */
+.calendar .days li {
+    display: inline-block;
+    width: 30px; /* Adjust the width and height to change the size of the circles */
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%; /* Make the element round */
+    margin: 5px; /* Adjust the margin to control spacing between circles */
+}
+
+.calendar .days li.present {
+    color: white;
+    background-color: green;
+}
