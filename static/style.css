@@ -1,0 +1,150 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* background-color: rgb(255,218,185) */
+    text-decoration: none;
+}
+.cc-1{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: rgb(255,218,185); */
+    /* background-image: bg; */
+}  
+
+.bg-I{
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    position: absolute;
+}
+.form-control {
+    background: transparent;
+    border: none;
+    width: 300px;
+    height: 50px;
+    color: rgb(36, 58, 138) !important;
+    border: 1px solid transparent;
+    background: rgb(255 255 255 / 35%);
+    border-radius: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: 0.3s; 
+    margin-bottom: 20px;
+    text-decoration: none;
+    border-color:transparent;
+}
+.form-control::-webkit-input-placeholder { 
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.form-control::placeholder {
+    color: rgb(36, 58, 138) !important; /* Change this color to the desired color */
+}
+.form-control:hover,
+.form-control:focus {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    border-color: rgba(74, 108, 136, 0.4);
+    color: rgb(10, 2, 40);
+    text-decoration: none;
+}
+.table-image{
+    width: 2rem;
+}
+
+.C1{
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.C2{
+    display: flex;
+  }
+  .C2, .form-control{
+    margin: 10px;
+  }
+
+.form-control1{
+    background: transparent;
+    border: none;
+    width: 300px;
+    height: 50px;
+    color: rgb(36, 58, 138) !important;
+    border: 1px solid transparent;
+    background: rgb(255 255 255 / 35%);
+    border-radius: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: 0.3s; 
+    margin-bottom: 20px;
+    text-decoration: none;
+    border-color: rgb(10, 2, 40);
+}
+
+.form-control2{
+    background: transparent;
+    border: none;
+    width: 125px;
+    height: 40px;
+    color: rgb(36, 58, 138) !important;
+    border: 1px solid transparent;
+    background: rgb(255 255 255 / 35%);
+    border-radius: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: 0.3s; 
+    margin-bottom: 20px;
+    text-decoration: none;
+    /* border-color: rgb(10, 2, 40); */
+}
+
+.form-control2:hover,
+.form-control2:focus {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    border-color: rgba(136, 84, 74, 0.4);
+    color: rgb(245, 244, 250);
+    text-decoration: none;
+}
+
+#webCam {
+    border: 2px solid #000; /* Example border style */
+    border-radius: 10px; /* Example border radius */
+}
+
+.spinner-wrapper{
+    background-color: #000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/* Add some styles for the calendar */
+.calendar .days li {
+    display: inline-block;
+    width: 30px; /* Adjust the width and height to change the size of the circles */
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%; /* Make the element round */
+    margin: 5px; /* Adjust the margin to control spacing between circles */
+}
+
+.calendar .days li.present {
+    color: white;
+    background-color: green;
+}
