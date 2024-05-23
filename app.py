@@ -74,7 +74,6 @@ def get_frame():
 
 def verify(img):
     tests, imagep = grab()
-    print(imagep)
     for x in tests:
         arr = x[0]
         b = np.fromstring(arr.strip('[]'), sep=' ')
@@ -307,9 +306,17 @@ def update_user_data():
             # Decode the base64-encoded content
             image_data = base64.b64decode(content)
             cursor.execute(
-                "UPDATE resources SET content = %s, updated_by = %s WHERE user_id = %s",
-                (image_data, user_id)
+                "UPDATE public.resources SET content = %s, updated_by = %s WHERE user_id = %s RETURNING id",
+                (image_data, admin_id, user_id)
             )
+            resource_id = cursor.fetchone()[0]
+            np_array = np.frombuffer(image_data, dtype=np.uint8)
+            image = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+            ef = face.face_encodings(image)[0]
+            x = np.array_str(ef)
+
+            cursor.execute("UPDATE public.encoder SET content = %s, updated_by = %s WHERE resource_id = %s",
+                           (x, admin_id, resource_id))
 
         # Commit the changes
         conn.commit()
@@ -334,25 +341,30 @@ def get_user_data_by_register_no(register_no):
         cursor.execute(
             "SELECT u.id, u.register_no, u.name, r.content " +
             "FROM public.user u " +
-            "JOIN resources r ON u.id = r.user_id " +
+            "JOIN public.resources r ON u.id = r.user_id " +
             "WHERE u.register_no = %s",
             (register_no,)
         )
         user_data = cursor.fetchone()
-
+        cursor.execute(
+            "SELECT ct.class_name " +
+            "FROM public.class_type ct " +
+            "JOIN public.user_class uc ON ct.id = uc.class_id " +
+            "JOIN public.user u ON u.id = uc.user_id"
+        )
+        class_name = cursor.fetchone()
         cursor.close()
         conn.close()
-
         if user_data:
             # Convert binary data (content) to base64 encoding
-            content_base64 = base64.b64encode(user_data[4]).decode('utf-8')
+            content_base64 = base64.b64encode(user_data[3]).decode('utf-8')
 
             # Return the user data with content as base64 string
             return jsonify({
                 'id': str(user_data[0]),
                 'register_no': user_data[1],
                 'name': user_data[2],
-                'class': user_data[3],
+                'class': class_name,
                 'content': content_base64
             })
         else:
@@ -414,12 +426,21 @@ def classm():
     cursor = conn.cursor()
 
     # Fetch classes from the database
-    cursor.execute("SELECT id, class_name FROM class_type")
+    cursor.execute("SELECT id, class_name FROM public.class_type")
     classes = cursor.fetchall()
+
+    classes_array = []
+    for classs in classes:
+        class_id, class_name = classs
+        class_data = {
+            "id": class_id,
+            "class_name": class_name
+        }
+        classes_array.append(class_data)
 
     cursor.close()
     conn.close()
-    return render_template('classm.html', classes=classes)
+    return render_template('classm.html', classes=classes_array)
 
 @app.route('/add_class', methods=['POST'])
 def add_class():
@@ -449,7 +470,6 @@ def update_class():
         class_id = request.form['id']
         class_name = request.form['class_name']
         admin_id = session.get('admin_id')
-
         # Update the class in the database
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -516,10 +536,8 @@ def get_class_names():
 @app.route('/save_image', methods=['GET'])
 def save_image():
     _,buffers = cap.read()
-    print(buffers)
     if buffers is not None:
         m = verify(buffers)
-        print(m)
         return jsonify({'message': m})
     else:
         return jsonify({'message': 'No frame available'})
@@ -554,37 +572,35 @@ def get_user_attendance(register_no):
         print(f"Error occurred: {e}")  # Debugging
         return jsonify({'success': False, 'message': 'Failed to fetch attendance data.'}), 500
     
-@app.route('/get_class_attendance/<id>', methods=['GET'])
-def get_class_attendance(id):
+@app.route('/attendance', methods=['POST'])
+def attendance():
     try:
+        data = request.json
+        class_id = data.get('class_id')
+        date = data.get('date')
+
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Fetch attendance dates for the class by class id
-        cursor.execute(
-            """
-            SELECT a.date
-            FROM public.user u
-            LEFT JOIN public.attendance a ON u.id = a.user_id
-            LEFT JOIN public.user_class uc ON u.id = uc.user_id
-            LEFT JOIN public.class_type ct ON uc.class_id = ct.id
-            WHERE ct.id = %s
-            """, (id,)
-        )
-        attendance_records = cursor.fetchall()
+        query = """
+        SELECT u.register_no, u.name, 
+        CASE WHEN a.date IS NOT NULL THEN TRUE ELSE FALSE END AS present
+        FROM public.user u
+        LEFT JOIN public.user_class uc ON u.id = uc.user_id
+        LEFT JOIN public.attendance a ON u.id = a.user_id AND a.date = %s
+        WHERE uc.class_id = %s
+        """
+
+        cursor.execute(query, (date, class_id))
+        attendance_data = cursor.fetchall()
 
         cursor.close()
         conn.close()
 
-        if attendance_records:
-            attendance_dates = [record[0].strftime('%Y-%m-%d') for record in attendance_records]
-            return jsonify({'success': True, 'attendance': attendance_dates})
-        else:
-            return jsonify({'success': False, 'message': 'No attendance records found'}), 404
-
+        return jsonify(attendance_data)
     except Exception as e:
         print(f"Error occurred: {e}")  # Debugging
-        return jsonify({'success': False, 'message': 'Failed to fetch attendance data.'}), 500
+        return jsonify({'success': False, 'message': 'Failed to fetch class attendance data.'}), 500
 
 @app.route('/logout', methods=['POST'])
 def logout():

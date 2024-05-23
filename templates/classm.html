@@ -46,7 +46,7 @@
                         <tbody>
                             {% for class in classes %}
                             <tr>
-                              <td>{{ class[1] }}</td>
+                              <td>{{ class.class_name }}</td>
                               <td class="d-flex justify-content-center">
                                   <button class="btn btn-primary edit me-2" onclick="openEditModal('{{ class.id }}', '{{ class.class_name }}')"><i class="bi bi-pencil-square" title="Edit"> Edit</i></button>
                                   <button class="btn btn-danger delete ms-2"><i class="bi bi-trash3" title="Delete"> Delete</i></button>
@@ -162,19 +162,13 @@
                 <table id="dataTable" class="table table-hover">
                     <thead>
                       <tr>
-                        <th scope="col">Id</th>
+                        <th scope="col">Register No.</th>
                         <th scope="col">Name</th>
                         <th scope="col">Attendance</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">0</th>
-                        <td>Base</td>
-                        <td><i class="bi bi-check"></i></td>
-                        <td class="d-flex justify-content-center">
-                        </td>
-                      </tr>
+                    <tbody id="attendanceBody">
+                        <!-- Rows will be inserted dynamically here -->
                     </tbody>
                   </table>
             </div>
@@ -308,24 +302,58 @@
                 });
             });
 
-        function viewattendance(button) {
-            // Get the closest table row to the button clicked
-            const row = $(button).closest('tr');
-            // Find the name cell within the row
-            const studentName = row.find('td:nth-child(1)').text().trim();
-            // Show the modal
-            $('#AttendanceModal').modal('show');
-            // Update modal title with the student's name
-            $('#AttendanceModal .modal-title').text(studentName+"'s attendance");
-            // Start the spinner if needed
-            $('.spinner-grow').addClass('spinner-grow-sm');
-            const listItems = document.querySelectorAll('.days li');
-            listItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    $('#TableModal').modal('show');
+            function viewattendance(button) {
+                const row = $(button).closest('tr');
+                const classId = row.find('td:nth-child(1)').data('id');
+                $('#AttendanceModal').modal('show');
+                $('#AttendanceModal .modal-title').text("Attendance Calendar");
+
+                const listItems = document.querySelectorAll('.days li');
+                listItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const selectedDate = item.getAttribute('data-date'); // You need to set this attribute with the date in your calendar
+                        fetchAttendanceData(classId, selectedDate);
+                    });
                 });
-            });
-        }
+            }
+
+            function fetchAttendanceData(classId, date) {
+                fetch('/attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ class_id: classId, date: date })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    populateAttendanceTable(data);
+                    $('#TableModal').modal('show');
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            function populateAttendanceTable(data) {
+                const tbody = document.getElementById('attendanceBody');
+                tbody.innerHTML = '';
+
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    const registerNoCell = document.createElement('td');
+                    const nameCell = document.createElement('td');
+                    const attendanceCell = document.createElement('td');
+                    
+                    registerNoCell.textContent = item[0];
+                    nameCell.textContent = item[1];
+                    attendanceCell.innerHTML = item[2] ? '<i class="bi bi-check"></i>' : '';
+
+                    row.appendChild(registerNoCell);
+                    row.appendChild(nameCell);
+                    row.appendChild(attendanceCell);
+
+                    tbody.appendChild(row);
+                });
+            }
     </script>
 </body>
 </html>

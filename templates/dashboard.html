@@ -149,7 +149,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editImage" class="form-label">Image</label>
-                            <input type="file" class="form-control" id="editImage" name="editImage" required>
+                            <input type="file" class="form-control" id="editImage" name="editImage">
                         </div>
                     </form>
                 </div>
@@ -543,7 +543,6 @@
                 reader.onload = function(e) {
                     // Get the base64 encoded string
                     var fileContent = e.target.result.split(',')[1]; // Remove the data URL prefix
-
                     // Send updated data to the server using AJAX for database update
                     $.ajax({
                         url: '/update_user_data',
