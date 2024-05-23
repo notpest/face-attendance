@@ -16,21 +16,33 @@
         }
     </style>
 </head>
-<body class="bg-I" style="background-image: url('{{ url_for('static', filename='images/bg2.jpg') }}')">
+<body class="bg-I" style="background-color:rgba(97,162,117,0.3);">
     <section class="dashboard-section">
         <div class="container">
-            <div class="row mt-3">
-                <div class="col-md-6">
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <button id="backBtn" class="form-control2 back-button"><i class="bi bi-arrow-bar-left"> Back</i></button>
+                </div>
+                <div class="col-md-4">
                     <h3>Manage Classes</h3>
                 </div>
-
-                <div class="col-md-6 text-end">
-                    <button id="addClassBtn" class="btn btn-success"><i class="bi bi-plus"> Add Class</i></button>
+                <div class="col-md-3 text-end form-control3">
+                    <span class="switch">
+                        <input type="checkbox" id="switcher">
+                        <label for="switcher"></label>
+                    </span>
+                </div>
+                <div class="col-md-2 text-end">
                     <button id="logoutBtn" class="form-control2"><i class="bi bi-box-arrow-right"> Logout</i> </button>
                 </div>
                 <div class="col-md-6 text-end">
                     <div class="input-group mb-3">
                         <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                        <button class="form-control dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Classrooms</button>
+                            <div class="dropdown-menu" id="classDropdown">
+                                <!-- Dropdown items will be dynamically added here -->
+                            </div>
+                        <button id="addClassBtn" class="form-control"><i class="bi bi-plus"> Add Class</i></button>
                     </div>
                 </div>
             </div>
@@ -359,6 +371,10 @@
                     tbody.appendChild(row);
                 });
             }
+            document.getElementById('backBtn').addEventListener('click', function() {
+                // Redirect to welcome.html
+                window.location.href = '/admin_login';
+            });
     </script>
 </body>
 </html>
