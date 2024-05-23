@@ -17,7 +17,7 @@ def register(name, username, password):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO admin (name, username, hashed_password) VALUES (%s, %s, %s)",
+        "INSERT INTO public.admin (name, username, hashed_password) VALUES (%s, %s, %s)",
         (name, username, hashed_password)
     )
     conn.commit()
@@ -25,5 +25,4 @@ def register(name, username, password):
     cursor.close()
     conn.close()
 
-register('Rejoy', 'rejoy', 'rejoy')
-
+register('Rejoy', 'admin', 'admin')
