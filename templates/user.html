@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='/style.css')}}">
     <title>Peaches and Passion Fruit</title>
@@ -63,9 +64,20 @@
         text-decoration: none;
         cursor: pointer;
     }
+
+    #canvas{
+        height:0px;
+        width:0px;
+      }
+      .back-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+    }
     </style>
 </head>
-<body background="{{ url_for('static',filename='/images/bg2.jpg')}}">
+<body class="cc-1" style="background-color:rgba(97,162,117,0.3);">
     <div id="container">
         <div id="video-container">
             <!--<h1>Webcam Stream</h1>-->
@@ -89,8 +101,6 @@
         var modal = document.getElementById("myModal");
         var modalMessage = document.getElementById("modal-message");
         var stream;
-        //var canvas = document.getElementById('canvas');
-        //var context = canvas.getContext('2d');
 
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(function (videoStream) {
@@ -102,9 +112,6 @@
             }); 
 
         captureButton.addEventListener('click', function () {
-            //context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            //image.src = canvas.toDataURL();
-            //saveImage(image.src);
             captureFrame();
         });
         
@@ -116,17 +123,6 @@
                     modal.style.display = "block";
                 })
                 .catch(error => console.error('Error:', error));
-            // var stream = video.captureStream();
-            // var track = stream.getVideoTracks()[0];
-            // var imageCapture = new ImageCapture(track);
-            // imageCapture.grabFrame()
-            //     .then(function (imageBitmap) {
-            //         image.src = URL.createObjectURL(imageBitmap);
-            //         saveImage(image.src);
-            //     })
-            //     .catch(function (error) {
-            //         console.error('Error:', error);
-            //     });
         }
         document.getElementsByClassName("close")[0].onclick = function () {
             modal.style.display = "none";
@@ -146,18 +142,7 @@
                 });
             }
         });
-        // function saveImage(imageData) {
-        //     fetch('/save_image', {
-        //         method: 'POST',
-        //         body: JSON.stringify({ image_data: imageData }),
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         }
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => console.log(data))
-        //     .catch(error => console.error('Error:', error));
-        // }
+    
     </script>
 </body>
 </html>
