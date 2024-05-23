@@ -18,17 +18,23 @@
         }
     </style>
 </head>
-<body class="bg-I" style="background-image: url('{{ url_for('static', filename='images/bg2.jpg') }}')">
+<body class="bg-I" style="background-color:rgba(97,162,117,0.3);">
     <section class="dashboard-section">
         <div class="container">
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <h3>Manage Students</h3>
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <button id="backBtn" class="form-control2 back-button"><i class="bi bi-arrow-bar-left"> Back</i></button>
                 </div>
-
-                <div class="col-md-6 text-end">
-                    <button id="attendanceBtn" onclick="location.href='{{ url_for('classm') }}'" class="btn btn-info"><i class="bi bi-person-check"> Class Management</i> </button> 
-                    <!-- <button id="addRowBtn" class="btn btn-success"><i class="bi bi-person-plus"> Add</i> </button> -->
+                <div class="col-md-4">
+                    <h3>Manage Student</h3>
+                </div>
+                <div class="col-md-3 text-end form-control3">
+                    <span class="switch">
+                        <input type="checkbox" id="switcher" checked>
+                        <label for="switcher"></label>
+                    </span>
+                </div>
+                <div class="col-md-2 text-end ">
                     <button id="logoutBtn" class="form-control2"><i class="bi bi-box-arrow-right"> Logout</i> </button>
                 </div>
                 <div class="col-md-6 text-end">
@@ -711,6 +717,30 @@
                         }
                     });
                 });
+        
+        document.getElementById('backBtn').addEventListener('click', function() {
+            // Redirect to welcome.html
+            window.location.href = '/admin_login';
+        });
+
+        const switcher = document.getElementById('switcher');
+        switcher.addEventListener('change', () => {
+            if (switcher.checked) {
+                window.location.href =  "dashboard";
+            } else {
+                window.location.href ="classm";
+            }
+        });
+        
+        document.getElementById('flexSwitchCheckDefault').addEventListener('change', function() {
+            if (this.checked) {
+                // If the switch is turned on, go to welcome.html
+                window.location.href = "classm.html";
+            } else {
+                // If the switch is turned off, go to cam.html
+                window.location.href = "dashboard";
+            }
+        });
     </script>
 </body>
 </html>

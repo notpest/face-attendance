@@ -375,6 +375,25 @@
                 // Redirect to welcome.html
                 window.location.href = '/admin_login';
             });
+
+            const switcher = document.getElementById('switcher');
+            switcher.addEventListener('change', () => {
+                if (switcher.checked) {
+                    window.location.href =  "dashboard";
+                } else {
+                    window.location.href ="classm.html";
+                }
+            });
+            
+            document.getElementById('flexSwitchCheckDefault').addEventListener('change', function() {
+                if (this.checked) {
+                    // If the switch is turned on, go to welcome.html
+                    window.location.href = "classm.html";
+                } else {
+                    // If the switch is turned off, go to cam.html
+                    window.location.href = "dashboard";
+                }
+            });
     </script>
 </body>
 </html>
