@@ -2,4 +2,6 @@ flask
 psycopg2
 opencv-python
 numpy
+cmake
+setuptools
 face_recognition
