@@ -45,7 +45,7 @@
                         </thead>
                         <tbody>
                             {% for class in classes %}
-                            <tr>
+                            <tr data-id="{{ class.id }}">
                               <td>{{ class.class_name }}</td>
                               <td class="d-flex justify-content-center">
                                   <button class="btn btn-primary edit me-2" onclick="openEditModal('{{ class.id }}', '{{ class.class_name }}')"><i class="bi bi-pencil-square" title="Edit"> Edit</i></button>
@@ -302,36 +302,41 @@
                 });
             });
 
+            let currentClassId = null;
             function viewattendance(button) {
                 const row = $(button).closest('tr');
-                const classId = row.find('td:nth-child(1)').data('id');
+                const classId = row.data('id');
+                currentClassId = classId; // Update the global variable
                 $('#AttendanceModal').modal('show');
                 $('#AttendanceModal .modal-title').text("Attendance Calendar");
 
-                const listItems = document.querySelectorAll('.days li');
-                listItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        const selectedDate = item.getAttribute('data-date'); // You need to set this attribute with the date in your calendar
-                        fetchAttendanceData(classId, selectedDate);
-                    });
-                });
+                renderCalendar(classId);  // Pass classId to renderCalendar
             }
 
             function fetchAttendanceData(classId, date) {
-                fetch('/attendance', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ class_id: classId, date: date })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    populateAttendanceTable(data);
-                    $('#TableModal').modal('show');
-                })
-                .catch(error => console.error('Error:', error));
+                // Fetch attendance data from the server
+                fetch(`/fetch_attendance_data?class_id=${classId}&date=${date}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the table modal with the fetched data
+                        const tableBody = document.querySelector("#TableModal tbody");
+                        tableBody.innerHTML = "";  // Clear existing data
+
+                        data.forEach(user => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <th scope="row">${user.register_no}</th>
+                                <td>${user.name}</td>
+                                <td>${user.attendance ? '<i class="bi bi-check"></i>' : ''}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        $('#TableModal').modal('show');  // Show the table modal
+                    })
+                    .catch(error => console.error('Error fetching attendance data:', error));
             }
+
 
             function populateAttendanceTable(data) {
                 const tbody = document.getElementById('attendanceBody');

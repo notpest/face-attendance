@@ -570,37 +570,42 @@ def get_user_attendance(register_no):
 
     except Exception as e:
         print(f"Error occurred: {e}")  # Debugging
-        return jsonify({'success': False, 'message': 'Failed to fetch attendance data.'}), 500
+        return jsonify({'success': False, 'message': 'Failed to fetch user attendance data.'}), 500
     
-@app.route('/attendance', methods=['POST'])
-def attendance():
+@app.route('/fetch_attendance_data')
+def fetch_attendance_data():
     try:
-        data = request.json
-        class_id = data.get('class_id')
-        date = data.get('date')
+        class_id = request.args.get('class_id')
+        date = request.args.get('date')
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        query = """
-        SELECT u.register_no, u.name, 
-        CASE WHEN a.date IS NOT NULL THEN TRUE ELSE FALSE END AS present
-        FROM public.user u
-        LEFT JOIN public.user_class uc ON u.id = uc.user_id
-        LEFT JOIN public.attendance a ON u.id = a.user_id AND a.date = %s
-        WHERE uc.class_id = %s
-        """
+        # Query to get users and their attendance for the specified class and date
+        cursor.execute("""
+            SELECT u.register_no, u.name, 
+                CASE WHEN a.date IS NOT NULL THEN TRUE ELSE FALSE END AS attendance
+            FROM public.user u
+            JOIN public.user_class uc ON u.id = uc.user_id
+            LEFT JOIN public.attendance a ON u.id = a.user_id AND DATE(a.date) = DATE(%s)
+            WHERE uc.class_id = %s
+        """, (date, class_id))
 
-        cursor.execute(query, (date, class_id))
         attendance_data = cursor.fetchall()
-
+        print("Attendance data:", attendance_data)
         cursor.close()
         conn.close()
 
-        return jsonify(attendance_data)
+        # Convert data to a list of dictionaries for easy JSON serialization
+        attendance_list = [
+            {'register_no': row[0], 'name': row[1], 'attendance': row[2]}
+        for row in attendance_data]
+
+        return jsonify(attendance_list)
     except Exception as e:
         print(f"Error occurred: {e}")  # Debugging
-        return jsonify({'success': False, 'message': 'Failed to fetch class attendance data.'}), 500
+        return jsonify({'success': False, 'message': 'Failed to fetch attendance data.'}), 500
+    
 
 @app.route('/logout', methods=['POST'])
 def logout():
