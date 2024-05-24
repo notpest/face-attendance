@@ -544,7 +544,6 @@ def get_class_names():
 
         cursor.close()
         conn.close()
-        print(class_names)
         return jsonify(class_names), 200
     except Exception as e:
         print(f"Error occurred: {e}")  # Debugging
@@ -600,16 +599,27 @@ def fetch_attendance_data():
 
         # Query to get users and their attendance for the specified class and date
         cursor.execute("""
-            SELECT u.register_no, u.name, 
-                CASE WHEN a.date IS NOT NULL THEN TRUE ELSE FALSE END AS attendance
-            FROM public.user u
-            JOIN public.user_class uc ON u.id = uc.user_id
-            LEFT JOIN public.attendance a ON u.id = a.user_id AND DATE(a.date) = DATE(%s)
-            WHERE uc.class_id = %s
+            SELECT register_no, name, attendance
+            FROM (
+                SELECT 
+                    u.register_no, 
+                    u.name, 
+                    CASE WHEN a.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS attendance,
+                    ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY a.date DESC) AS row_num
+                FROM 
+                    public.user u
+                JOIN 
+                    public.user_class uc ON u.id = uc.user_id
+                LEFT JOIN 
+                    public.attendance a ON u.id = a.user_id AND DATE(a.date) = DATE(%s)
+                WHERE 
+                    uc.class_id = %s
+            ) AS subquery
+            WHERE 
+                row_num = 1;
         """, (date, class_id))
 
         attendance_data = cursor.fetchall()
-        print("Attendance data:", attendance_data)
         cursor.close()
         conn.close()
 
