@@ -83,7 +83,10 @@ def verify(img):
     imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
     faces_in_frame = face.face_locations(imgS)
     if len(faces_in_frame)==0:
-        return "Face not in frame"
+        success = "False"
+        message = "Face not in Frame"
+        response = {"success": success, "message": message}
+        return response
     encoded_faces = face.face_encodings(imgS, faces_in_frame)
     for encode_face, faceloc in zip(encoded_faces,faces_in_frame):
         matches = face.compare_faces(encode, encode_face)
@@ -97,11 +100,15 @@ def verify(img):
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             name = str(name)
             name = name[2:len(name)-3]
-
-            # Return the customized greeting message
-            return f"Welcome {name}, attendance marked at {timestamp}"
+            success = "True"
+            message = f"Welcome {name}! Your attendance has been marked at {timestamp}."
+            response = {"success": success, "message": message}
+            return response
         else:
-            return "Unrecognised"
+            success = "False"
+            message = "Unrecognized! Retake"
+            response = {"success": success, "message": message}
+            return response
 
 def mark_attendance(name):
     try:

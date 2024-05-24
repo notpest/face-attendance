@@ -16,27 +16,46 @@
         .table-image {
             width: 100%;
         }
+        #row1 {
+            position: relative;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+        }
+        #logoutBtn {
+            position: relative;
+            right: -10px;
+            z-index: 1000;
+            height: 50px
+        }
+        #heading {
+            position: relative;
+            z-index: 1000;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-I" style="background-color:rgba(97,162,117,0.3);">
+    <div class="row mt-1" id="row1">
+        <!-- <div class="col-md-3">
+            <button id="backBtn" class="form-control2 back-button"><i class="bi bi-arrow-bar-left"> Back</i></button>
+        </div> -->
+        <div class="col-md-7">
+            <h3 id="heading">Manage Student</h3>
+        </div>
+        <div class="col-md-2 text-end form-control3">
+            <span class="switch">
+                <input type="checkbox" id="switcher" checked>
+                <label for="switcher"></label>
+            </span>
+        </div>
+        <div class="col-md-2 text-end">
+            <button id="logoutBtn" class="form-control2"><i class="bi bi-box-arrow-right"> Logout</i> </button>
+        </div>
+    </div>
     <section class="dashboard-section">
         <div class="container">
-            <div class="row mt-2">
-                <div class="col-md-3">
-                    <button id="backBtn" class="form-control2 back-button"><i class="bi bi-arrow-bar-left"> Back</i></button>
-                </div>
-                <div class="col-md-3">
-                    <h3>Manage Student</h3>
-                </div>
-                <div class="col-md-3 text-end form-control3">
-                    <span class="switch">
-                        <input type="checkbox" id="switcher" checked>
-                        <label for="switcher"></label>
-                    </span>
-                </div>
-                <div class="col-md-2 text-end ">
-                    <button id="logoutBtn" class="form-control2"><i class="bi bi-box-arrow-right"> Logout</i> </button>
-                </div>
+            <div class="row mt-1">
                 <div class="col-md-6 text-end">
                     <div class="input-group mb-3">
                         <input type="text" id="searchInput" class="form-control" placeholder="Search...">
@@ -710,7 +729,7 @@
                         type: 'POST',
                         success: function(response) {
                             // Redirect to welcome.html
-                            window.location.href = '/';
+                            window.location.href = '/admin_login';
                         },
                         error: function(error) {
                             console.error("There was an error logging out:", error);
@@ -718,10 +737,10 @@
                     });
                 });
         
-        document.getElementById('backBtn').addEventListener('click', function() {
-            // Redirect to welcome.html
-            window.location.href = '/admin_login';
-        });
+        // document.getElementById('backBtn').addEventListener('click', function() {
+        //     // Redirect to welcome.html
+        //     window.location.href = '/admin_login';
+        // });
 
         const switcher = document.getElementById('switcher');
         switcher.addEventListener('change', () => {
@@ -809,17 +828,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             populateClassDropdown();
         });
-
-        document.getElementById('flexSwitchCheckDefault').addEventListener('change', function() {
-            if (this.checked) {
-                // If the switch is turned on, go to welcome.html
-                window.location.href = "classm";
-            } else {
-                // If the switch is turned off, go to cam.html
-                window.location.href = "dashboard";
-            }
-        });
-
     </script>
 </body>
 </html>
