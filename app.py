@@ -527,7 +527,7 @@ def get_class_names():
 
         cursor.close()
         conn.close()
-
+        print(class_names)
         return jsonify(class_names), 200
     except Exception as e:
         print(f"Error occurred: {e}")  # Debugging

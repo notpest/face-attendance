@@ -25,7 +25,7 @@
                 <div class="col-md-3">
                     <button id="backBtn" class="form-control2 back-button"><i class="bi bi-arrow-bar-left"> Back</i></button>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <h3>Manage Student</h3>
                 </div>
                 <div class="col-md-3 text-end form-control3">
@@ -41,13 +41,11 @@
                     <div class="input-group mb-3">
                         <input type="text" id="searchInput" class="form-control" placeholder="Search...">
                         <button class="form-control dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Classrooms</button>
-                        <!-- Move the dropdown-menu div outside of the button -->
-                        <div class="dropdown-menu" id="classDropdown">
-                            <button class="dropdown-item" type="button" value="">All Classes</button>
-                            <!-- Dropdown items will be dynamically added here -->
-                        </div>
+                            <div class="dropdown-menu" id="classDropdown">
+                                <!-- Dropdown items will be dynamically added here -->
+                            </div>
                         <button id="addRowBtn" class="form-control"><i class="bi bi-plus"> Add Student</i></button>
-                    </div>                    
+                    </div>
                 </div>
             </div>
             <div class="row mt-4">
@@ -231,6 +229,8 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -732,93 +732,6 @@
             }
         });
         
-        // Fetch class names and populate the dropdown menu
-        function populateClassDropdown() {
-            console.log("Fetching class names...");
-            fetch('/get_class_names')
-                .then(response => response.json())
-                .then(classNames => {
-                    console.log("Received class names:", classNames);
-                    const dropdown = document.getElementById('classDropdown');
-                    dropdown.innerHTML = '';
-                    const allClassesOption = document.createElement('button');
-                    allClassesOption.classList.add('dropdown-item');
-                    allClassesOption.type = 'button';
-                    allClassesOption.value = '';
-                    allClassesOption.textContent = 'All Classes';
-                    dropdown.appendChild(allClassesOption);
-                    classNames.forEach(className => {
-                        const option = document.createElement('button');
-                        option.classList.add('dropdown-item');
-                        option.type = 'button';
-                        option.value = className;
-                        option.textContent = className;
-                        option.addEventListener('click', function () {
-                            console.log('Dropdown item clicked:', this.value);
-                            const selectedClass = this.value;
-                            filterTableByClass(selectedClass);
-                        });
-                        dropdown.appendChild(option);
-                        console.log('Event listener added for class:', className);
-                    });
-                    console.log('Dropdown menu populated with class names:', classNames);
-                })
-                .catch(error => {
-                    console.error('Error fetching class names:', error);
-                });
-        }
-
-        // Function to show all rows in the table
-        function showAllRows() {
-            const rows = document.querySelectorAll('#dataTable tbody tr');
-            rows.forEach(row => {
-                row.style.display = '';
-            });
-        }
-
-        // Function to filter the table by class
-        function filterTableByClass(className) {
-            console.log('Filtering table by class:', className);
-            const rows = document.querySelectorAll('#dataTable tbody tr');
-            rows.forEach(row => {
-                const classCell = row.querySelector('td:nth-child(4)');
-                if (className === '' || className === 'All Classes') {
-                    showAllRows(); // Show all rows if "All Classes" is selected
-                } else {
-                    if (classCell.textContent === className) {
-                        row.style.display = ''; // Show the row if it matches the selected class
-                    } else {
-                        row.style.display = 'none'; // Hide the row if it doesn't match the selected class
-                    }
-                }
-            });
-        }
-
-        // Run the function to populate the dropdown menu on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Page loaded. Populating class dropdown...');
-            populateClassDropdown();
-        });
-
-        // Event listener for dropdown item click
-        document.addEventListener('click', function (event) {
-            if (event.target.classList.contains('dropdown-item')) {
-                const selectedClass = event.target.value;
-                console.log('Dropdown item clicked:', selectedClass);
-                filterTableByClass(selectedClass);
-            }
-        });
-
-        $(document).ready(function(){
-            $('.dropdown-toggle').dropdown();
-        });
-        
-        // Run the function to populate the dropdown menu on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Page loaded. Populating class dropdown...');
-            populateClassDropdown();
-        });
-
         document.getElementById('flexSwitchCheckDefault').addEventListener('change', function() {
             if (this.checked) {
                 // If the switch is turned on, go to welcome.html
@@ -828,7 +741,6 @@
                 window.location.href = "dashboard";
             }
         });
-
     </script>
 </body>
 </html>
