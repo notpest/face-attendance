@@ -509,19 +509,11 @@ def delete_class():
             conn.close()
             return jsonify({"message": "Cannot delete class. There are users associated with this class."}), 400
 
-        # Get the class ID
-        cursor.execute("""
-            SELECT id 
-            FROM public.class_type 
-            WHERE class_name = %s 
-        """, (class_name,))
-        class_id = cursor.fetchone()[0]
-
         # Delete the class from the class_type table
         cursor.execute("""
             DELETE FROM public.class_type 
             WHERE class_name = %s
-        """, (class_id,))
+        """, (class_name,))
 
         conn.commit()
         cursor.close()
