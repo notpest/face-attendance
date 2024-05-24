@@ -94,6 +94,7 @@ def verify(img):
         matchIndex = np.argmin(faceDist)
         if matches[matchIndex]:
             name = imagep[matchIndex]
+            print(name)
             mark_attendance(u[matchIndex])
 
             # Get the current timestamp

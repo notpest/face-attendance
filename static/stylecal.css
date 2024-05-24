@@ -92,7 +92,7 @@
 }
 
 .days li.active::before{
-    background: rgb(3, 7, 96);
+    background: rgb(255, 255, 255);
 }
 
 
@@ -108,5 +108,10 @@
 
 .calendar .days li.present {
     color: white;
-    background-color: green;
+    background-color: rgb(105, 182, 90);
+}
+
+.calendar .days li:hover {
+    background-color: rgba(97, 162, 148, 0.582); /* Change this to your desired color */
+    color: white; /* Ensure the text color is readable */
 }

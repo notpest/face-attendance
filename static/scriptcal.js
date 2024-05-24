@@ -6,7 +6,7 @@ let date= new Date(),
 currYear = date.getFullYear(),
 currMonth = date.getMonth();
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May","Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const renderCalendar = (classId = currentClassId) => {
     if (classId) {
@@ -47,19 +47,19 @@ const renderCalendar = (classId = currentClassId) => {
     });
 };
 
-renderCalendar();  // Initial call to render calendar
-
 prevNextIcon.forEach(icon => {
     icon.addEventListener("click", () => {
         currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
 
-        if (currMonth < 0 || currMonth > 11) {
-            date = new Date(currYear, currMonth);
-            currYear = date.getFullYear();
-            currMonth = date.getMonth();
-        } else {
-            date = new Date();
+        if (currMonth < 0) {
+            currMonth = 11; // Wrap around to December
+            currYear--; // Decrement year
+        } else if (currMonth > 11) {
+            currMonth = 0; // Wrap around to January
+            currYear++; // Increment year
         }
-        renderCalendar();  // Re-render calendar
+        renderCalendar(currentClassId);  // Pass currentClassId to renderCalendar
     });
 });
+
+renderCalendar();  // Initial call to render calendar
