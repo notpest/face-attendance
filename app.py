@@ -493,20 +493,37 @@ def delete_class():
     try:
         class_name = request.form['class_name']
 
-        # Delete the class from the database
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            "DELETE FROM public.class_type WHERE class_name = %s RETURNING id",
-            (class_name,)
-        )
-        class_id = cursor.fetchone()[0]
-        cursor.execute(
-            "DELETE FROM public.user_class WHERE class_id = %s",
-            (class_id,)
-        )
-        conn.commit()
 
+        # Check if there are any users in the class
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM public.user_class uc
+            JOIN public.class_type ct ON uc.class_id = ct.id
+            WHERE ct.class_name = %s
+        """, (class_name,))
+        user_count = cursor.fetchone()[0]
+        if user_count > 0:
+            cursor.close()  
+            conn.close()
+            return jsonify({"message": "Cannot delete class. There are users associated with this class."}), 400
+
+        # Get the class ID
+        cursor.execute("""
+            SELECT id 
+            FROM public.class_type 
+            WHERE class_name = %s 
+        """, (class_name,))
+        class_id = cursor.fetchone()[0]
+
+        # Delete the class from the class_type table
+        cursor.execute("""
+            DELETE FROM public.class_type 
+            WHERE class_name = %s
+        """, (class_id,))
+
+        conn.commit()
         cursor.close()
         conn.close()
 

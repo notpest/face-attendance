@@ -278,8 +278,9 @@
                     success: function(response) {
                         row.remove(); // Remove the row from the table
                     },
-                    error: function(error) {
-                        console.error("There was an error deleting the class:", error);
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("There was an error deleting the class:", errorThrown);
+                        alert(jqXHR.responseJSON.message); // Display the error message
                     }
                 });
             }
@@ -389,11 +390,9 @@
 
             // Fetch class names and populate the dropdown menu
             function populateClassDropdown() {
-                console.log("Fetching class names...");
                 fetch('/get_class_names')
                     .then(response => response.json())
                     .then(classNames => {
-                        console.log("Received class names:", classNames);
                         const dropdown = document.getElementById('classDropdown');
                         dropdown.innerHTML = '';
                         const allClassesOption = document.createElement('button');
@@ -409,14 +408,11 @@
                             option.value = className;
                             option.textContent = className;
                             option.addEventListener('click', function () {
-                                console.log('Dropdown item clicked:', this.value);
                                 const selectedClass = this.value;
                                 filterTableByClass(selectedClass);
                             });
                             dropdown.appendChild(option);
-                            console.log('Event listener added for class:', className);
                         });
-                        console.log('Dropdown menu populated with class names:', classNames);
                     })
                     .catch(error => {
                         console.error('Error fetching class names:', error);
@@ -433,7 +429,6 @@
 
             // Function to filter the table by class
             function filterTableByClass(className) {
-                console.log('Filtering table by class:', className);
                 const rows = document.querySelectorAll('#classTable tbody tr');
                 rows.forEach(row => {
                     const classCell = row.querySelector('td:first-child');
@@ -451,7 +446,6 @@
 
             // Run the function to populate the dropdown menu on page load
             document.addEventListener('DOMContentLoaded', function () {
-                console.log('Page loaded. Populating class dropdown...');
                 populateClassDropdown();
             });
 
@@ -459,7 +453,6 @@
             document.addEventListener('click', function (event) {
                 if (event.target.classList.contains('dropdown-item')) {
                     const selectedClass = event.target.value;
-                    console.log('Dropdown item clicked:', selectedClass);
                     filterTableByClass(selectedClass);
                 }
             });
