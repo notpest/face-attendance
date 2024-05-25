@@ -76,6 +76,7 @@
 }
 
 .days li.active{
+    background-color: rgba(97, 162, 148, 0.582);
     color: #fff;
 }
 
@@ -91,9 +92,9 @@
     transform: translate(-50%, -50%);
 }
 
-.days li.active::before{
+/* .days li.active::before{
     background: rgb(255, 255, 255);
-}
+} */
 
 
 .calendar .days li {

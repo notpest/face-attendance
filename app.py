@@ -21,8 +21,6 @@ def get_db_connection():
     return conn
 
 image = []
-encode = []
-u = []
 
 def grab():
     try:
@@ -35,7 +33,7 @@ def grab():
 
         cursor = connection.cursor()
         dd = []
-
+        u = []
         # Insert data into the encoder table
         cursor.execute("SELECT content FROM public.encoder")
         records = cursor.fetchall()
@@ -49,7 +47,7 @@ def grab():
             dd.append(d[0])
 
         # Return the fetched records
-        return records, dd
+        return records, dd, u
     except (Exception, Error) as error:
         print("Error:", error)
     finally:
@@ -73,7 +71,8 @@ def get_frame():
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 def verify(img):
-    tests, imagep = grab()
+    encode = []
+    tests, imagep, u = grab()
     for x in tests:
         arr = x[0]
         b = np.fromstring(arr.strip('[]'), sep=' ')
@@ -93,6 +92,9 @@ def verify(img):
         faceDist = face.face_distance(encode, encode_face)
         matchIndex = np.argmin(faceDist)
         if matches[matchIndex]:
+            print(u)
+            print(imagep)
+            print(matchIndex)
             name = imagep[matchIndex]
             print(name)
             mark_attendance(u[matchIndex])
@@ -296,6 +298,11 @@ def update_user_data():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
+            "SELECT id FROM public.user WHERE register_no = %s",(register_no,)
+        )
+        user_id = cursor.fetchone()[0]
+        print(user_id)
+        cursor.execute(
             "UPDATE public.user SET register_no = %s, name = %s, updated_by = %s WHERE id = %s",
             (register_no, name, admin_id, user_id)
         )
@@ -317,14 +324,15 @@ def update_user_data():
                 "UPDATE public.resources SET content = %s, updated_by = %s WHERE user_id = %s RETURNING id",
                 (image_data, admin_id, user_id)
             )
+            print("Updated Resources")
             resource_id = cursor.fetchone()[0]
             np_array = np.frombuffer(image_data, dtype=np.uint8)
             image = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
             ef = face.face_encodings(image)[0]
             x = np.array_str(ef)
-
             cursor.execute("UPDATE public.encoder SET content = %s, updated_by = %s WHERE resource_id = %s",
                            (x, admin_id, resource_id))
+            print("Updated Encoder")
 
         # Commit the changes
         conn.commit()

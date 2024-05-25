@@ -184,7 +184,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="editImage" class="form-label">Image</label>
-                            <input type="file" class="form-control" id="editImage" name="editImage">
+                            <img id="previewImage" class="mt-2" src="#" alt="Preview" style="max-width: 100px; display: none;">
+                            <div id="webcamContainer"></div>
+                            <button type="button" class="btn btn-secondary mt-2" id="startWebcamBtn">Use Webcam</button>
+                            <button type="button" class="btn btn-secondary mt-2" id="takePictureBtn">Take Picture</button>
+                            <input type="file" class="form-control" id="editImage" name="editImage" accept="image/*">
                         </div>
                     </form>
                 </div>
