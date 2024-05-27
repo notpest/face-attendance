@@ -102,9 +102,9 @@
                               <td>{{ user['name'] }}</td>
                              <td>{{ user['class_name'] }}</td>
                               <td class="d-flex justify-content-center">    
-                                  <button class="btn btn-primary edit me-2" onclick="openEditModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}')"><i class="bi bi-pencil-square" title="Edit"> Edit</i></button>
-                                  <button class="btn btn-danger delete ms-2"><i class="bi bi-trash3" title="Delete"> Delete</i></button>
-                                  <button class="btn btn-warning Attendance ms-2" onclick="viewAttendance('{{ user['register_no'] }}')"><i class="bi bi-calendar" title="Attendance"> View Attendance</i></button>
+                                  <button id="editButton" class="btn btn-primary edit me-2" onclick="openEditModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}')"><i class="bi bi-pencil-square" title="Edit"> Edit</i></button>
+                                  <button id="deleteButton" class="btn btn-danger delete ms-2"><i class="bi bi-trash3" title="Delete"> Delete</i></button>
+                                  <button id="attendanceButton" class="btn btn-warning Attendance ms-2" onclick="viewAttendance('{{ user['register_no'] }}')"><i class="bi bi-calendar" title="Attendance"> View Attendance</i></button>
                               </td>
                             </tr>
                             {% endfor %}
@@ -184,11 +184,12 @@
                         </div>
                         <div class="mb-3">
                             <label for="editImage" class="form-label">Image</label>
-                            <img id="previewImage" class="mt-2" src="#" alt="Preview" style="max-width: 100px; display: none;">
-                            <div id="webcamContainer"></div>
-                            <button type="button" class="btn btn-secondary mt-2" id="startWebcamBtn">Use Webcam</button>
-                            <button type="button" class="btn btn-secondary mt-2" id="takePictureBtn">Take Picture</button>
+                            <img id="editPreviewImage" class="mt-2" src="#" alt="Preview" style="max-width: 100px; display: none;">
+                            <div id="editWebcamContainer"></div>
+                            <button type="button" class="btn btn-secondary mt-2" id="editStartWebcamBtn">Use Webcam</button>
+                            <button type="button" class="btn btn-secondary mt-2" id="editTakePictureBtn" style="display: none;">Take Picture</button>
                             <input type="file" class="form-control" id="editImage" name="editImage" accept="image/*">
+                            <input type="hidden" id="editImageBase64" name="editImageBase64">
                         </div>
                     </form>
                 </div>
@@ -310,6 +311,54 @@
                 const bstr = atob(parts[1]);
                 let n = bstr.length;
                 const u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                return new Blob([u8arr], { type: mime });
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const editWebCamElement = document.createElement('video');
+            const editCanvasElement = document.createElement('canvas');
+            const editWebcam = new Webcam(editWebCamElement, "user", editCanvasElement);
+            
+            document.getElementById('editStartWebcamBtn').addEventListener('click', function() {
+                const editWebcamContainer = document.getElementById('editWebcamContainer');
+                while (editWebcamContainer.firstChild) {
+                    editWebcamContainer.removeChild(editWebcamContainer.firstChild);
+                }
+                editWebcamContainer.appendChild(editWebCamElement);
+                editWebcam.start();
+                document.getElementById('editStartWebcamBtn').style.display = 'none';
+                document.getElementById('editTakePictureBtn').style.display = 'block';
+                
+                editWebCamElement.width = 400;
+                editWebCamElement.height = 300;
+                
+                editWebcamContainer.appendChild(editWebCamElement);
+            });
+            
+            document.getElementById('editTakePictureBtn').addEventListener('click', function() {
+                const picture = editWebcam.snap();
+                const editPreviewImage = document.getElementById('editPreviewImage');
+                editPreviewImage.src = picture;
+                editPreviewImage.style.display = 'block';
+                editWebcam.stop();
+
+                // Convert picture to base64
+                const base64Image = picture.split(',')[1];
+                // Set the base64 image data in the hidden input
+                document.getElementById('editImageBase64').value = base64Image;
+            });
+
+
+            function dataURLtoBlob(dataURL) {
+                var parts = dataURL.split(',');
+                var mime = parts[0].match(/:(.*?);/)[1];
+                var bstr = atob(parts[1]);
+                var n = bstr.length;
+                var u8arr = new Uint8Array(n);
                 while (n--) {
                     u8arr[n] = bstr.charCodeAt(n);
                 }
@@ -571,6 +620,7 @@
             var registerNo = $('#editRegisterNo').val();
             var name = $('#editName').val();
             var className = $('#editClass').val();
+            var base64Image = $('#editImageBase64').val();
             var fileInput = $('#editImage')[0].files[0]; // Get the selected file
 
             // Check if a file is selected
@@ -603,8 +653,27 @@
                 };
                 // Read the file content as data URL (base64)
                 reader.readAsDataURL(fileInput);
+            } else if (base64Image) {
+                // If a base64 image is available (captured from webcam), send it to the server
+                console.log("else if base64image")
+                $.ajax({
+                    url: '/update_user_data',
+                    type: 'POST',
+                    data: {
+                        id: userId,
+                        register_no: registerNo,
+                        name: name,
+                        class_name: className,
+                        content: base64Image
+                    },
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
             } else {
-                // If no file is selected, proceed with other form fields
                 $.ajax({
                     url: '/update_user_data',
                     type: 'POST',
@@ -625,7 +694,6 @@
                     });
                 }
             });
-        
         
         // Event delegation for delete button
         $('#dataTable').on('click', '.delete', function() {
