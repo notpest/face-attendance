@@ -562,6 +562,8 @@
                     error: function(xhr, status, error) {
                         // Handle errors here
                         console.error(xhr.responseText);
+                        const errorMessage = JSON.parse(xhr.responseText).error; // Extract error message
+                        alert(errorMessage); // Display error message to the user
                     }
                 });
             }

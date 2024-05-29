@@ -238,6 +238,15 @@ def add_user():
 
         conn = get_db_connection()
         cursor = conn.cursor()
+        
+        # Check if register_no already exists
+        cursor.execute(
+            "SELECT COUNT(*) FROM public.user WHERE register_no = %s",
+            (register_no,)
+        )
+        existing_user_count = cursor.fetchone()[0]
+        if existing_user_count > 0:
+            return jsonify({"error": "Register number already exists."}), 400
 
         cursor.execute(
             "INSERT INTO public.user (register_no, name, created_by, updated_by) VALUES (%s, %s, %s, %s) RETURNING id",
