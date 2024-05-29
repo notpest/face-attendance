@@ -162,7 +162,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="addClose" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="saveRowBtn">Save changes</button>
                 </div>
             </div>
@@ -206,7 +206,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="editClose" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="updateRowBtn">Save changes</button>
                 </div>
             </div>
@@ -280,8 +280,10 @@
         document.addEventListener("DOMContentLoaded", function() {
             const webCamElement = document.createElement('video');
             const canvasElement = document.createElement('canvas');
-            const webcam = new Webcam(webCamElement, "user", canvasElement);
-            
+            // const webcam = new Webcam(webCamElement, "user", canvasElement);
+            let webcam = null;
+            const startWebcamBtn = document.getElementById('startWebcamBtn');
+            const takePictureBtn = document.getElementById('takePictureBtn');
             document.getElementById('startWebcamBtn').addEventListener('click', function() {
                 // Reset the webcam container
                 const webcamContainer = document.getElementById('webcamContainer');
@@ -289,10 +291,11 @@
                     webcamContainer.removeChild(webcamContainer.firstChild);
                 }
                 webcamContainer.appendChild(webCamElement);
+                webcam = new Webcam(webCamElement, "user", canvasElement);
                 webcam.start();
-                document.getElementById('startWebcamBtn').style.display = 'none';
-                document.getElementById('takePictureBtn').style.display = 'block';
-                
+                // Adjust button visibility
+                startWebcamBtn.style.display = 'none';
+                takePictureBtn.style.display = 'block';
                 webCamElement.width = 400;
                 webCamElement.height = 300;
                 
@@ -305,6 +308,10 @@
                 previewImage.src = picture;
                 previewImage.style.display = 'block';
                 webcam.stop();
+                webCamElement.width = 0;
+                webCamElement.height = 0;
+                document.getElementById('takePictureBtn').style.display = 'none';
+                document.getElementById('startWebcamBtn').style.display = 'block';
 
                 // Convert the image to base64 and set it in the hidden input field
                 const fileInput = document.getElementById('editImage');
@@ -315,6 +322,10 @@
                     fileInput.value = base64Image;
                 };
                 reader.readAsDataURL(blob);
+            });
+
+            document.getElementById('addClose').addEventListener('click', function() {
+                webcam.stop();
             });
             
             function dataURLtoBlob(dataURL) {
@@ -333,17 +344,20 @@
         document.addEventListener("DOMContentLoaded", function() {
             const editWebCamElement = document.createElement('video');
             const editCanvasElement = document.createElement('canvas');
-            const editWebcam = new Webcam(editWebCamElement, "user", editCanvasElement);
-            
+            // const editWebcam = new Webcam(editWebCamElement, "user", editCanvasElement);
+            let editWebcam = null;
+            const editStartWebcamBtn = document.getElementById('editStartWebcamBtn');
+            const editTakePictureBtn = document.getElementById('editTakePictureBtn');
             document.getElementById('editStartWebcamBtn').addEventListener('click', function() {
                 const editWebcamContainer = document.getElementById('editWebcamContainer');
                 while (editWebcamContainer.firstChild) {
                     editWebcamContainer.removeChild(editWebcamContainer.firstChild);
                 }
                 editWebcamContainer.appendChild(editWebCamElement);
+                editWebcam = new Webcam(editWebCamElement, "user", editCanvasElement);
                 editWebcam.start();
-                document.getElementById('editStartWebcamBtn').style.display = 'none';
-                document.getElementById('editTakePictureBtn').style.display = 'block';
+                editStartWebcamBtn.style.display = 'none';
+                editTakePictureBtn.style.display = 'block';
                 
                 editWebCamElement.width = 400;
                 editWebCamElement.height = 300;
@@ -357,11 +371,34 @@
                 editPreviewImage.src = picture;
                 editPreviewImage.style.display = 'block';
                 editWebcam.stop();
+                editWebCamElement.width = 0;
+                editWebCamElement.height = 0;
+                document.getElementById('editTakePictureBtn').style.display = 'none';
+                document.getElementById('editStartWebcamBtn').style.display = 'block';
 
-                // Convert picture to base64
-                const base64Image = picture.split(',')[1];
-                // Set the base64 image data in the hidden input
-                document.getElementById('editImageBase64').value = base64Image;
+                const fileInput = document.getElementById('editImageBase64');
+                const blob = dataURLtoBlob(picture);
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64Image = reader.result.split(',')[1];
+                    fileInput.value = base64Image;
+                };
+                reader.readAsDataURL(blob);
+            });
+
+            document.getElementById('editClose').addEventListener('click', function() {
+                editWebcam.stop();
+            });
+
+            $('#editRowModal').on('hidden.bs.modal', function () {
+                console.log("Resetting modal content...");
+                while (editWebcamContainer.firstChild) {
+                    editWebcamContainer.removeChild(editWebcamContainer.firstChild);
+                }
+                editPreviewImage.style.display = 'none';
+                editStartWebcamBtn.style.display = 'block';
+                editTakePictureBtn.style.display = 'none';
+                editRowForm.reset();
             });
 
             function dataURLtoBlob(dataURL) {
