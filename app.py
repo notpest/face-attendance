@@ -326,10 +326,15 @@ def update_user_data():
             )
             print("Updated Resources")
             resource_id = cursor.fetchone()[0]
+            print("1")
             np_array = np.frombuffer(image_data, dtype=np.uint8)
+            print("2")
             image = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+            print("3")
             ef = face.face_encodings(image)[0]
+            print("4")
             x = np.array_str(ef)
+            print("5")
             cursor.execute("UPDATE public.encoder SET content = %s, updated_by = %s WHERE resource_id = %s",
                            (x, admin_id, resource_id))
             print("Updated Encoder")
