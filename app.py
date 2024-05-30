@@ -5,7 +5,7 @@ import base64
 import cv2
 import numpy as np
 import face_recognition as face
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
@@ -586,23 +586,35 @@ def get_user_attendance(register_no):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Fetch attendance dates for the user by register number
-        cursor.execute(
-            """
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+
+        query = """
             SELECT a.date
             FROM public.user u
             JOIN public.attendance a ON u.id = a.user_id
             WHERE u.register_no = %s
-            """, (register_no,)
-        )
+        """
+        params = [register_no]
+
+        if start_date and end_date:
+            # Parse the end_date to ensure it's a date object and extend it to the end of the day
+            end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            query += " AND a.date >= %s AND a.date < %s"
+            params.extend([start_date, end_date.strftime('%Y-%m-%d')])
+
+        cursor.execute(query, params)
         attendance_records = cursor.fetchall()
 
         cursor.close()
         conn.close()
 
         if attendance_records:
-            attendance_dates = [record[0].strftime('%Y-%m-%d') for record in attendance_records]
-            return jsonify({'success': True, 'attendance': attendance_dates})
+            attendance_data = [
+                {'date': record[0].strftime('%Y-%m-%d'), 'time': record[0].strftime('%H:%M:%S')}
+                for record in attendance_records
+            ]
+            return jsonify({'success': True, 'attendance': attendance_data})
         else:
             return jsonify({'success': False, 'message': 'No attendance records found'}), 404
 

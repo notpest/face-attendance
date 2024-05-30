@@ -233,41 +233,36 @@
         </div>
     </div>
 
-    <!-- Modal for Attendance -->
-    <div class="modal fade" id="AttendanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <!-- Table Modal -->
+    <div class="modal fade" id="TableModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Attendance Calendar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
+                    <h5 class="modal-title" id="exampleModalLongTitle">Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="wrapper">
-                        <header>
-                            <p class="current-date"></p>
-                            <div class="icons">
-                                <span id="prev" class="material-symbols-rounded">&lt;</span>
-                                <span id="next" class="material-symbols-rounded">&gt;</span>
-                            </div>
-                        </header>
-                        <div class="calendar">
-                            <ul class="weeks">
-                                <li>Sun</li>
-                                <li>Mon</li>
-                                <li>Tue</li>
-                                <li>Wed</li>
-                                <li>Thu</li>
-                                <li>Fri</li>
-                                <li>Sat</li>
-                            </ul>
-                            <ul class="days"></ul>
-                        </div>
+                    <input type="hidden" id="registerNo">
+                    <div class="date-picker-container">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate">
+                        <button type="button" onclick="filterAttendance()">Filter</button>
                     </div>
+                    <table id="dataTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Log In Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceBody">
+                            <!-- Rows will be inserted dynamically here -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="modal-footer">
-                    <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
-                </div>
+                <div class="modal-footer"></div>
             </div>
         </div>
     </div>
@@ -784,20 +779,49 @@
                 });
             });
         
-        // Initialize variables for the current month and year
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-        let attendanceData = [];
-        
         // Function to view attendance for a specific user
         function viewAttendance(registerNo) {
-            fetch(`/get_user_attendance/${registerNo}`)
+            // Store register number in a hidden input field
+            document.getElementById('registerNo').value = registerNo;
+            // Initially fetch all attendance data when modal is opened
+            fetchAttendanceData(registerNo);
+        }
+
+        function filterAttendance() {
+            const registerNo = document.getElementById('registerNo').value; // Assuming you have a hidden input with the user's register number
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            fetchAttendanceData(registerNo, startDate, endDate);
+        }
+
+        function fetchAttendanceData(registerNo, startDate = '', endDate = '') {
+            let url = `/get_user_attendance/${registerNo}`;
+            if (startDate && endDate) {
+                url += `?start_date=${startDate}&end_date=${endDate}`;
+            }
+
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        attendanceData = data.attendance;
-                        renderCalendar(currentMonth, currentYear);
-                        $('#AttendanceModal').modal('show');
+                        const attendanceBody = document.getElementById('attendanceBody');
+                        attendanceBody.innerHTML = '';  // Clear existing rows
+
+                        data.attendance.forEach(record => {
+                            const row = document.createElement('tr');
+                            const dateCell = document.createElement('td');
+                            const timeCell = document.createElement('td');
+
+                            dateCell.textContent = record.date;
+                            timeCell.textContent = record.time;
+
+                            row.appendChild(dateCell);
+                            row.appendChild(timeCell);
+                            attendanceBody.appendChild(row);
+                        });
+
+                        $('#TableModal').modal('show');
                     } else {
                         alert(data.message);
                     }
@@ -805,53 +829,6 @@
                 .catch(error => console.error('Error fetching attendance data:', error));
         }
 
-        // Function to render the calendar for a given month and year
-        function renderCalendar(month, year) {
-            const daysElement = document.querySelector('.days');
-            const currentDateElement = document.querySelector('.current-date');
-            daysElement.innerHTML = '';
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            for (let i = 0; i < firstDay; i++) {
-                const emptyCell = document.createElement('li');
-                daysElement.appendChild(emptyCell);
-            }
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const date = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                const dayElement = document.createElement('li');
-                dayElement.textContent = day;
-
-                if (attendanceData.includes(date)) {
-                    dayElement.classList.add('present');
-                }
-
-                daysElement.appendChild(dayElement);
-            }
-
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            currentDateElement.textContent = `${monthNames[month]} ${year}`;
-        }
-
-        document.getElementById('prev').addEventListener('click', () => {
-            currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            renderCalendar(currentMonth, currentYear);
-        });
-
-        document.getElementById('next').addEventListener('click', () => {
-            currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            renderCalendar(currentMonth, currentYear);
-        });
 
         document.getElementById('logoutBtn').addEventListener('click', function() {
                     $.ajax({
@@ -866,11 +843,6 @@
                         }
                     });
                 });
-        
-        // document.getElementById('backBtn').addEventListener('click', function() {
-        //     // Redirect to welcome.html
-        //     window.location.href = '/admin_login';
-        // });
 
         const switcher = document.getElementById('switcher');
         switcher.addEventListener('change', () => {
