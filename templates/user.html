@@ -81,6 +81,7 @@
                 <div class="modal-body1">
                     <!-- Image and result will be inserted here by JavaScript -->
                 </div>
+                <img id="user-image" src="" alt="User Image" style="display: none; margin: 0 auto; width: 100px; height: auto;">
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">OK</button>
                 </div>
@@ -127,12 +128,18 @@
                 .then(data => {
                     // modalMessage.innerText = data.message;
                     // modal.style.display = "block";
-                    console.log('Success:', data.message.success);
-                    console.log('Message:', data.message.message);
-                    const iconClass = data.message.success === "True" ? "bi bi-shield-fill-check btn btn-success" : "bi bi-shield-fill-x btn btn-danger";
+                    console.log('Success:', data.success);
+                    console.log('Message:', data.message);
+                    const iconClass = data.success === "True" ? "bi bi-shield-fill-check btn btn-success" : "bi bi-shield-fill-x btn btn-danger";
                     // Clear the previous message and replace with new message
                     const modalBody1 = document.querySelector('.modal-body1');
-                    modalBody1.innerHTML = `<i class="${iconClass} " id="veri" style="font-size: 2em;"></i><div>${data.message.message}</div>`;
+                    modalBody1.innerHTML = `<i class="${iconClass} " id="veri" style="font-size: 2em;"></i><div>${data.message}</div>`;
+                    const userImage = document.getElementById("user-image");
+                    userImage.style.display = data.success === "True" ? "block" : "none"; // Show or hide the image 
+                    if (data.success === "True") {
+                        userImage.src = "data:image/png;base64," + data.image;
+                        userImage.style.display = "block";
+                    }
                     Myodal.show();
                 })
                 .catch(error => console.error('Error:', error));

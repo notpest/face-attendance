@@ -84,7 +84,7 @@ def verify(img):
     if len(faces_in_frame)==0:
         success = "False"
         message = "Face not in Frame"
-        response = {"success": success, "message": message}
+        response = {"success": success, "message": message, "image": None}
         return response
     encoded_faces = face.face_encodings(imgS, faces_in_frame)
     for encode_face, faceloc in zip(encoded_faces,faces_in_frame):
@@ -105,12 +105,23 @@ def verify(img):
             name = name[2:len(name)-3]
             success = "True"
             message = f"Welcome {name}! Your attendance has been marked at {timestamp}."
-            response = {"success": success, "message": message}
+
+             # Fetch image from database
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT content FROM resources WHERE user_id = %s", (u[matchIndex],))
+            image_data = cursor.fetchone()[0]  # Assuming there's only one image per user
+            conn.close()
+
+            # Encode the image data to base64
+            encoded_image = base64.b64encode(image_data).decode('utf-8')
+
+            response = {"success": success, "message": message, "image": encoded_image}
             return response
         else:
             success = "False"
             message = "Unrecognized! Retake"
-            response = {"success": success, "message": message}
+            response = {"success": success, "message": message, "image": None}
             return response
 
 def mark_attendance(name):
@@ -576,9 +587,9 @@ def save_image():
     _,buffers = cap.read()
     if buffers is not None:
         m = verify(buffers)
-        return jsonify({'message': m})
+        return jsonify({'message': m['message'], 'success': m['success'], 'image': m['image']})
     else:
-        return jsonify({'message': 'No frame available'})
+        return jsonify({'message': 'No frame available', 'success': 'False', 'image': None})
     
 @app.route('/get_user_attendance/<register_no>', methods=['GET'])
 def get_user_attendance(register_no):
